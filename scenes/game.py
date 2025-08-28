@@ -14,13 +14,11 @@ if __name__ == "__main__":  # Solo para que no ejecutes este archivo
 
 import pygame
 
-from pygame.locals import K_ESCAPE, KEYDOWN, QUIT
+from pygame.locals import K_ESCAPE, KEYDOWN, QUIT, K_SPACE
 
 from elements.jorge import Player
 
 from elements.bug import Enemy
-
-from elements.cursor import Cursor
 
 from scenes import game_over
 
@@ -64,9 +62,6 @@ def gameLoop(GAME_OVER, QUIT_GAME, skin: str):
 
     # loop principal del juego
 
-    cursor = Cursor()
-    all_sprites.add(cursor)
-
     while running:
 
         screen.blit(background_image, [0, 0])
@@ -99,6 +94,8 @@ def gameLoop(GAME_OVER, QUIT_GAME, skin: str):
                 # era la tecla de escape? -> entonces terminamos
                 if event.key == K_ESCAPE:
                     running = False
+                if event.key == K_SPACE:
+                    player.shoot()
 
             # fue un click al cierre de la ventana? -> entonces terminamos
             elif event.type == QUIT:
@@ -109,12 +106,6 @@ def gameLoop(GAME_OVER, QUIT_GAME, skin: str):
                 enemies.add(new_enemy)
                 all_sprites.add(new_enemy)
 
-            # POR HACER (2.4): Agregar evento disparo proyectil
-            elif event.type == pygame.MOUSEBUTTONDOWN:
-                player.shoot(pygame.mouse.get_pos())
-
-            elif event.type == pygame.MOUSEMOTION:
-                cursor.update(*pygame.mouse.get_pos())
 
         clock.tick(40)
 

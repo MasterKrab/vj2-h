@@ -16,8 +16,9 @@ class Projectile(pygame.sprite.Sprite):
         super(Projectile, self).__init__()
 
         # POR HACER (2.0): Aspecto y parámetros iniciales de la bala
-        self.surf = pygame.Surface((10, 10))
-        self.surf.fill((255, 255, 255))
+        projectile = pygame.image.load('assets/projectile.png')
+        projectile = pygame.transform.scale(projectile, (50,100))
+        self.surf = projectile
         self.rect = self.surf.get_rect(center=pos)
 
         # POR HACER (2.1): Parámetros iniciales de la bala

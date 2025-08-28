@@ -13,14 +13,13 @@ if __name__ == "__main__":  # Solo para que no ejecutes este archivo
     sys.exit()
 
 import pygame
-from pygame.locals import K_UP, K_DOWN, K_LEFT, K_RIGHT, RLEACCEL
-import math
+from pygame.locals import K_w, K_s, K_a, K_d, RLEACCEL 
 from time import time
 
 from elements.projectile import Projectile
 
 
-COOLDOWN = 1.5
+COOLDOWN = 0.6
 
 
 class Player(pygame.sprite.Sprite):
@@ -40,13 +39,13 @@ class Player(pygame.sprite.Sprite):
         self.projectiles = pygame.sprite.Group()
 
     def update(self, pressed_keys):
-        if pressed_keys[K_UP]:
+        if pressed_keys[K_w]:
             self.rect.move_ip(0, -4)
-        if pressed_keys[K_DOWN]:
+        if pressed_keys[K_s]:
             self.rect.move_ip(0, 4)
-        if pressed_keys[K_LEFT]:
+        if pressed_keys[K_a]:
             self.rect.move_ip(-4, 0)
-        if pressed_keys[K_RIGHT]:
+        if pressed_keys[K_d]:
             self.rect.move_ip(4, 0)
 
         if self.rect.left < 0:
@@ -61,17 +60,14 @@ class Player(pygame.sprite.Sprite):
         # POR HACER (2.3): Actualizar la posición de los proyectiles
         self.projectiles.update()
 
-    def shoot(self, mouse_pos):
+    def shoot(self):
         if time() - self.last_shoot < COOLDOWN:
             return
 
         self.last_shoot = time()
 
         # POR HACER (2.3): Crear y calcular dirección proyectil
-
-        direction = (mouse_pos[0] - self.rect.centerx, mouse_pos[1] - self.rect.centery)
-        length = math.hypot(direction[0], direction[1])
-        direction = (direction[0] / length, direction[1] / length)
+        direction = (1, 0)
 
         projectile = Projectile(
             self.rect.center, direction, self.screen_width, self.screen_height
