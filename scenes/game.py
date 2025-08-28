@@ -39,8 +39,8 @@ def gameLoop(GAME_OVER, QUIT_GAME):
 
     """ 2.- crear el objeto pantalla"""
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-    background_image = pygame.image.load("assets/pixelBackground.jpg").convert()
-
+    background_image = pygame.image.load("assets/background.png").convert()
+    background_image = pygame.transform.scale(background_image, (SCREEN_WIDTH, SCREEN_HEIGHT))
     """ Preparamos el gameloop """
     """ 1.- creamos el reloj del juego"""
 
@@ -112,7 +112,7 @@ def gameLoop(GAME_OVER, QUIT_GAME):
             # POR HACER (2.4): Agregar evento disparo proyectil
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 player.shoot(pygame.mouse.get_pos())
-q
+
             elif event.type == pygame.MOUSEMOTION:
                 cursor.update(*pygame.mouse.get_pos())
 

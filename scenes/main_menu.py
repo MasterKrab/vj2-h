@@ -1,11 +1,10 @@
 """
-Hola este es modulo game_over,
-este modulo manejara la escena de pantalla de muerte
+Hola este es modulo menu principal.
 """
 
 import pygame
 
-from pygame.locals import KEYDOWN, K_SPACE, QUIT, K_ESCAPE
+from pygame.locals import KEYDOWN, K_RETURN, QUIT, K_ESCAPE
 
 
 RED = (255, 0, 0)
@@ -31,14 +30,19 @@ def gameLoop(CONTINUE_GAME, QUIT_GAME):
 
     clock = pygame.time.Clock()
 
+
+    """ Fondo del menu"""
+    screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+    background_image = pygame.image.load("assets/duck_wp.png").convert()
+
     """ Texto """
     font_title = pygame.font.SysFont("arial", 50)
-    title = font_title.render("GAME OVER", True, RED, BLACK)
+    title = font_title.render("Menú Principal", True, RED, BLACK)
     title_rect = title.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2))
 
     font_text = pygame.font.SysFont("arial", 20)
     text = font_text.render(
-        "Presiona [ESPACIO] para volver a jugar o [ESC] para salir del juego",
+        "Presiona [ENTER] para jugar o [ESC] para salir del juego",
         True,
         WHITE,
         BLACK,
@@ -52,11 +56,13 @@ def gameLoop(CONTINUE_GAME, QUIT_GAME):
     # loop principal del juego
 
     while running:
+        
         pygame.display.flip()
-
+        screen.blit(background_image, [0, 0])
         screen.blit(title, title_rect)
         screen.blit(text, text_rect)
-
+        
+        
         # iteramos sobre cada evento en la cola
         for event in pygame.event.get():
             # se presiono una tecla?
@@ -65,7 +71,7 @@ def gameLoop(CONTINUE_GAME, QUIT_GAME):
                 if event.key == K_ESCAPE:
                     return QUIT_GAME
 
-                if event.key == K_SPACE:
+                if event.key == K_RETURN:
                     return CONTINUE_GAME
 
             # fue un click al cierre de la ventana? -> entonces terminamos
