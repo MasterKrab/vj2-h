@@ -5,6 +5,7 @@ el codigo que al ejecutar pondra en marcha nuestro juego
 import scenes.main_menu as MainMenu
 import scenes.game as GameScene
 import scenes.game_over as GameOver
+import scenes.character_menu as character_menu
 
 GAME_OVER = 0
 QUIT_GAME = 1
@@ -18,7 +19,9 @@ while True:
     if code == QUIT_GAME:
         break
 
-    code = GameScene.gameLoop(GAME_OVER, QUIT_GAME)
+    skin = character_menu.gameLoop(CONTINUE_GAME, QUIT_GAME)
+
+    code = GameScene.gameLoop(GAME_OVER, QUIT_GAME, skin)
 
     if code == QUIT_GAME:
         break

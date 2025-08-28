@@ -25,10 +25,10 @@ from elements.cursor import Cursor
 from scenes import game_over
 
 
-def gameLoop(GAME_OVER, QUIT_GAME):
+def gameLoop(GAME_OVER, QUIT_GAME, skin: str):
     code = QUIT_GAME
 
-    """iniciamos los modulos de pygame"""
+    """iniciamos los modulos de pygame / skin tiene la ruta del asset a usar como skin de jorge"""
 
     pygame.init()
 
@@ -51,7 +51,7 @@ def gameLoop(GAME_OVER, QUIT_GAME):
     pygame.time.set_timer(ADDENEMY, 600)
 
     """ 3.- creamos la instancia de jugador"""
-    player = Player(SCREEN_WIDTH, SCREEN_HEIGHT)
+    player = Player(SCREEN_WIDTH, SCREEN_HEIGHT, skin)
 
     """ 4.- contenedores de enemigos y jugador"""
     enemies = pygame.sprite.Group()

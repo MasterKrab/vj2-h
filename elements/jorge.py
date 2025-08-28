@@ -20,17 +20,15 @@ from time import time
 from elements.projectile import Projectile
 
 
-JorgePNG = pygame.image.load("assets/JorgeVJ.png")
-JorgePNG_scaled = pygame.transform.scale(JorgePNG, (80, 80))
-
-
 COOLDOWN = 1.5
 
 
 class Player(pygame.sprite.Sprite):
 
-    def __init__(self, SCREEN_WIDTH, SCREEN_HEIGHT):
+    def __init__(self, SCREEN_WIDTH, SCREEN_HEIGHT, skin: str):
         super(Player, self).__init__()
+        JorgePNG = pygame.image.load("assets/" + skin)
+        JorgePNG_scaled = pygame.transform.scale(JorgePNG, (80, 80))
         self.surf = JorgePNG_scaled
         self.surf.set_colorkey((0, 0, 0), RLEACCEL)
         self.rect = self.surf.get_rect()
