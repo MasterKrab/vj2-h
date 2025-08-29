@@ -12,12 +12,12 @@ import pygame
 
 class Projectile(pygame.sprite.Sprite):
 
-    def __init__(self, pos, direction, SCREEN_WIDTH, SCREEN_HEIGHT):
+    def __init__(self, pos, direction, SCREEN_WIDTH, SCREEN_HEIGHT, radius=50):
         super(Projectile, self).__init__()
 
         # POR HACER (2.0): Aspecto y parámetros iniciales de la bala
         projectile = pygame.image.load('assets/projectile.png')
-        projectile = pygame.transform.scale(projectile, (50,100))
+        projectile = pygame.transform.scale(projectile, (radius, 2 * radius))
         self.surf = projectile
         self.rect = self.surf.get_rect(center=pos)
 
@@ -35,10 +35,10 @@ class Projectile(pygame.sprite.Sprite):
             self.direction[0] * self.speed, self.direction[1] * self.speed
         )
 
-        if (
-            self.rect.left < 0
-            or self.rect.right > self.screen_width
-            or self.rect.top < 0
-            or self.rect.bottom > self.screen_height
+        if ( #Agregue unas tolerancias aca porque se me estaban bugeando los limites.
+            self.rect.left < 0  - 100
+            or self.rect.right > self.screen_width + 100
+            or self.rect.top < 0 - 100
+            or self.rect.bottom > self.screen_height + 100
         ):
             self.kill()

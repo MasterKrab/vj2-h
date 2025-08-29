@@ -19,8 +19,8 @@ from time import time
 from elements.projectile import Projectile
 
 
-COOLDOWN = 2
-SUPER_COOLDOWN = 8
+COOLDOWN = 1
+SUPER_COOLDOWN = 5
 
 
 class Player(pygame.sprite.Sprite):
@@ -82,11 +82,11 @@ class Player(pygame.sprite.Sprite):
         if time() - self.last_super_shoot < SUPER_COOLDOWN:
             return
     
-        projectile_1 = Projectile(self.rect.center, (1,1), self.screen_width, self.screen_height)
-        projectile_2 = Projectile(self.rect.center, (0.5,0.5), self.screen_width, self.screen_height)
-        projectile_3 = Projectile(self.rect.center, (1,0), self.screen_width, self.screen_height)
-        projectile_4 = Projectile(self.rect.center, (0.5, -0.5), self.screen_width, self.screen_height)
-        projectile_5 = Projectile(self.rect.center, (1, -1), self.screen_width, self.screen_height)
+        projectile_1 = Projectile(self.rect.center, (1,1), self.screen_width, self.screen_height, radius=120)
+        projectile_2 = Projectile(self.rect.center, (0.5,0.5), self.screen_width, self.screen_height, radius=120)
+        projectile_3 = Projectile(self.rect.center, (1,0), self.screen_width, self.screen_height, radius=120)
+        projectile_4 = Projectile(self.rect.center, (0.5, -0.5), self.screen_width, self.screen_height, radius=120)
+        projectile_5 = Projectile(self.rect.center, (1, -1), self.screen_width, self.screen_height, radius=120)
         projectiles = [projectile_1, projectile_2, projectile_3, projectile_4, projectile_5]
         self.projectiles.add(projectiles)
         self.projectile_sfx.play()

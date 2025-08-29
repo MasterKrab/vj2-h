@@ -36,7 +36,7 @@ def gameLoop(CONTINUE_GAME, QUIT_GAME):
     title = font_title.render("YOU DIED", True, RED, BLACK)
     title_rect = title.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2))
 
-    font_text = pygame.font.SysFont("arial", 20)
+    font_text = pygame.font.SysFont("times new roman", 20)
     text = font_text.render(
         "Presiona [ESPACIO] para volver a jugar o [ESC] para salir del juego",
         True,
