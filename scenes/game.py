@@ -32,7 +32,7 @@ def gameLoop(GAME_OVER, QUIT_GAME, skin: str):
     pygame.mixer.init()
     pygame.mixer.music.load('audio/gary.mp3')
     pygame.mixer.music.play(-1)
-
+    
     """ Creamos y editamos la ventana de pygame (escena) """
     """ 1.-definir el tamaño de la ventana"""
     SCREEN_WIDTH = 1000

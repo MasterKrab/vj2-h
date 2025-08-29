@@ -25,6 +25,7 @@ COOLDOWN = 2
 class Player(pygame.sprite.Sprite):
 
     def __init__(self, SCREEN_WIDTH, SCREEN_HEIGHT, skin: str):
+        self.projectile_sfx = pygame.mixer.Sound('audio/fire.mp3')
         super(Player, self).__init__()
         JorgePNG = pygame.image.load("assets/" + skin)
         JorgePNG_scaled = pygame.transform.scale(JorgePNG, (80, 80))
@@ -73,3 +74,4 @@ class Player(pygame.sprite.Sprite):
             self.rect.center, direction, self.screen_width, self.screen_height
         )
         self.projectiles.add(projectile)
+        self.projectile_sfx.play()
