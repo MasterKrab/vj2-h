@@ -3,12 +3,13 @@
 ## Implementados
 - Pantalla de muerte
 - Personalización del Jugador
-- Menú de inicio y pausa
-- Música y Sonido
+- Menú de inicio y pausa (**FALTA EL MENU DE PAUSA**)
+- Música y Sonido **HAY UN SOLO SONIDO; TAMPOCO SE QUE MÄS AGREGAR**
+- Sistema de Puntuación
 
 ## No implementados
 - PowerUps
-- Sistema de Puntuación
+
 - Vidas del Jugador
 - Progresión de Niveles
 - Habilidades especiales jugador

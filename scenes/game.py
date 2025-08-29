@@ -21,7 +21,8 @@ from elements.jorge import Player
 from elements.bug import Enemy
 
 from scenes import game_over
-
+BLACK = (0, 0, 0)
+WHITE = (255, 255, 255)
 
 def gameLoop(GAME_OVER, QUIT_GAME, skin: str):
     code = QUIT_GAME
@@ -63,11 +64,18 @@ def gameLoop(GAME_OVER, QUIT_GAME, skin: str):
     # variable booleana para manejar el loop
     running = True
 
+    ''' Sistema de puntacion'''
+    player_score = 0
+    score = pygame.font.SysFont("montserrat", 50)
+    score = score.render(f"SCORE: {str(player_score)}", True, BLACK, WHITE)
+    score_rect = score.get_rect(center=(100, 20))
+
     # loop principal del juego
 
     while running:
 
         screen.blit(background_image, [0, 0])
+        screen.blit(score, score_rect)
 
         for entity in all_sprites:
             screen.blit(entity.surf, entity.rect)
@@ -77,7 +85,12 @@ def gameLoop(GAME_OVER, QUIT_GAME, skin: str):
             screen.blit(projectile.surf, projectile.rect)
 
         # POR HACER (2.5): Eliminar bug si colisiona con proyectil
-        pygame.sprite.groupcollide(enemies, player.projectiles, True, True)
+        # pygame.sprite.groupcollide(enemies, player.projectiles, True, True)
+        if pygame.sprite.groupcollide(enemies, player.projectiles, True, True):
+            player_score += 100
+            score = pygame.font.SysFont("montserrat", 50)
+            score = score.render("SCORE: " + str(player_score), True, BLACK, WHITE)
+            score_rect = score.get_rect(center=(100, 20))
 
         pressed_keys = pygame.key.get_pressed()
         player.update(pressed_keys)
@@ -96,7 +109,10 @@ def gameLoop(GAME_OVER, QUIT_GAME, skin: str):
             if event.type == KEYDOWN:
                 # era la tecla de escape? -> entonces terminamos
                 if event.key == K_ESCAPE:
-                    running = False
+                    if paused:
+                        running = False
+                    else:
+                        paused = True
                 if event.key == K_SPACE:
                     player.shoot()
 
@@ -111,5 +127,7 @@ def gameLoop(GAME_OVER, QUIT_GAME, skin: str):
 
 
         clock.tick(40)
+
+    pygame.mixer.music.stop()
 
     return code
