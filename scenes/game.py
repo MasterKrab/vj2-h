@@ -19,8 +19,9 @@ from pygame.locals import K_ESCAPE, KEYDOWN, QUIT, K_SPACE
 from elements.jorge import Player
 
 from elements.bug import Enemy
+from time import time
 
-from scenes import game_over
+
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 
@@ -70,12 +71,20 @@ def gameLoop(GAME_OVER, QUIT_GAME, skin: str):
     score = score.render(f"SCORE: {str(player_score)}", True, BLACK, WHITE)
     score_rect = score.get_rect(center=(100, 20))
 
+    '''vidas'''
+    lifes = 3
+    hp = pygame.font.SysFont("montserrat", 50)
+    hp = hp.render("VIDAS: " + str(lifes), True, BLACK, WHITE)
+    hp_rect = hp.get_rect(center=(SCREEN_WIDTH - 100, 20))
+    invulneravility_time = 0
+
     # loop principal del juego
 
     while running:
 
         screen.blit(background_image, [0, 0])
         screen.blit(score, score_rect)
+        screen.blit(hp, hp_rect)
 
         for entity in all_sprites:
             screen.blit(entity.surf, entity.rect)
@@ -97,9 +106,17 @@ def gameLoop(GAME_OVER, QUIT_GAME, skin: str):
         enemies.update()
 
         if pygame.sprite.spritecollideany(player, enemies):
-            player.kill()
-            code = GAME_OVER
-            running = False
+            if time() - invulneravility_time > 2:
+                if lifes == 1:
+                    player.kill()
+                    code = GAME_OVER
+                    running = False
+                else:
+                    lifes -= 1
+                    hp = pygame.font.SysFont("montserrat", 50)
+                    hp = hp.render("VIDAS: " + str(lifes), True, BLACK, WHITE)
+                    hp_rect = hp.get_rect(center=(SCREEN_WIDTH - 100, 20))
+                    invulneravility_time = time()
 
         pygame.display.flip()
 

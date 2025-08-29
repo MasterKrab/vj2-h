@@ -6,11 +6,10 @@
 - Menú de inicio y pausa (**FALTA EL MENU DE PAUSA**)
 - Música y Sonido **HAY UN SOLO SONIDO; TAMPOCO SE QUE MÄS AGREGAR**
 - Sistema de Puntuación
+- Vidas del Jugador **PODRIAMOS AGREGAR VIDAS QUE SE TOMAN (en conjunto a powerups)**
 
 ## No implementados
 - PowerUps
-
-- Vidas del Jugador
 - Progresión de Niveles
 - Habilidades especiales jugador
 - Nuevos Enemigos
