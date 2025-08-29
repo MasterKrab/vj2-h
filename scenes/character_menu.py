@@ -25,6 +25,9 @@ def gameLoop(CONTINUE_GAME, QUIT_GAME):
     """iniciamos los modulos de pygame"""
 
     pygame.init()
+    pygame.mixer.init()
+    pygame.mixer.music.load('audio/choose.mp3')
+    pygame.mixer.music.play(-1)
 
     """ Creamos y editamos la ventana de pygame (escena) """
     """ 1.-definir el tamaño de la ventana"""
@@ -89,16 +92,21 @@ def gameLoop(CONTINUE_GAME, QUIT_GAME):
         screen.blit(jorge_sombrero, (720, (SCREEN_HEIGHT / 2) - 50))
         
         
+        
         # iteramos sobre cada evento en la cola
         for event in pygame.event.get():
             # se presiono una tecla?
             if event.type == KEYDOWN:
                 # era la tecla de escape? -> entonces terminamos
                 if event.key == K_1:
+                    pygame.mixer.music.stop()
                     return 'Jorge_default.png'
                 if event.key == K_2:
+                    pygame.mixer.music.stop()
                     return 'JorgeVJ.png'
+                
                 if event.key == K_3:
+                    pygame.mixer.music.stop()
                     return 'Jorge_sombrero.png'
         
         clock.tick(40)

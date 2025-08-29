@@ -82,8 +82,7 @@ def gameLoop(CONTINUE_GAME, QUIT_GAME):
         screen.blit(title2, title_rect2)
         screen.blit(text, text_rect)
         screen.blit(text1, text_rect1)
-        screen.blit(head, head_rect)
-        
+        screen.blit(head, head_rect)      
         
         # iteramos sobre cada evento en la cola
         for event in pygame.event.get():

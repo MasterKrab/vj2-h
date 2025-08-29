@@ -19,7 +19,7 @@ from time import time
 from elements.projectile import Projectile
 
 
-COOLDOWN = 0.6
+COOLDOWN = 2
 
 
 class Player(pygame.sprite.Sprite):
