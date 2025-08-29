@@ -27,6 +27,7 @@ class Player(pygame.sprite.Sprite):
 
     def __init__(self, SCREEN_WIDTH, SCREEN_HEIGHT, skin: str):
         self.projectile_sfx = pygame.mixer.Sound('audio/fire.mp3')
+        self.super_projectile_sfx = pygame.mixer.Sound('audio/ballista.mp3')
         super(Player, self).__init__()
         JorgePNG = pygame.image.load("assets/" + skin)
         JorgePNG_scaled = pygame.transform.scale(JorgePNG, (80, 80))
@@ -91,3 +92,4 @@ class Player(pygame.sprite.Sprite):
         self.projectiles.add(projectiles)
         self.projectile_sfx.play()
         self.last_super_shoot = time()
+        self.super_projectile_sfx.play()

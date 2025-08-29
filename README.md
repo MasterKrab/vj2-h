@@ -21,5 +21,4 @@
 - Logros
 - Entorno Interactivo
 - Modo de juego cooperativo
-
 - Animaciones
