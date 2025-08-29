@@ -20,6 +20,7 @@ from elements.projectile import Projectile
 
 
 COOLDOWN = 2
+SUPER_COOLDOWN = 8
 
 
 class Player(pygame.sprite.Sprite):
@@ -35,6 +36,7 @@ class Player(pygame.sprite.Sprite):
         self.screen_width = SCREEN_WIDTH
         self.screen_height = SCREEN_HEIGHT
         self.last_shoot = time() - COOLDOWN
+        self.last_super_shoot = time() - SUPER_COOLDOWN
 
         # POR HACER (2.3): Crear lista de proyectiles
         self.projectiles = pygame.sprite.Group()
@@ -75,3 +77,17 @@ class Player(pygame.sprite.Sprite):
         )
         self.projectiles.add(projectile)
         self.projectile_sfx.play()
+    
+    def super_shoot(self):
+        if time() - self.last_super_shoot < SUPER_COOLDOWN:
+            return
+    
+        projectile_1 = Projectile(self.rect.center, (1,1), self.screen_width, self.screen_height)
+        projectile_2 = Projectile(self.rect.center, (0.5,0.5), self.screen_width, self.screen_height)
+        projectile_3 = Projectile(self.rect.center, (1,0), self.screen_width, self.screen_height)
+        projectile_4 = Projectile(self.rect.center, (0.5, -0.5), self.screen_width, self.screen_height)
+        projectile_5 = Projectile(self.rect.center, (1, -1), self.screen_width, self.screen_height)
+        projectiles = [projectile_1, projectile_2, projectile_3, projectile_4, projectile_5]
+        self.projectiles.add(projectiles)
+        self.projectile_sfx.play()
+        self.last_super_shoot = time()

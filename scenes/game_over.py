@@ -32,8 +32,8 @@ def gameLoop(CONTINUE_GAME, QUIT_GAME):
     clock = pygame.time.Clock()
 
     """ Texto """
-    font_title = pygame.font.SysFont("arial", 50)
-    title = font_title.render("GAME OVER", True, RED, BLACK)
+    font_title = pygame.font.SysFont("times new roman", 50)
+    title = font_title.render("YOU DIED", True, RED, BLACK)
     title_rect = title.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2))
 
     font_text = pygame.font.SysFont("arial", 20)

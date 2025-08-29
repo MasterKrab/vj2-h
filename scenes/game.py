@@ -14,7 +14,7 @@ if __name__ == "__main__":  # Solo para que no ejecutes este archivo
 
 import pygame
 
-from pygame.locals import K_ESCAPE, KEYDOWN, QUIT, K_SPACE
+from pygame.locals import K_ESCAPE, KEYDOWN, QUIT, K_SPACE, K_RETURN
 
 from elements.jorge import Player
 
@@ -34,6 +34,8 @@ def gameLoop(GAME_OVER, QUIT_GAME, skin: str):
     pygame.mixer.init()
     pygame.mixer.music.load('audio/gary.mp3')
     pygame.mixer.music.play(-1)
+    hitmarker_sfx = pygame.mixer.Sound('audio/hitmarker.mp3')
+    oof_sfx = pygame.mixer.Sound('audio/oof.mp3')
     
     """ Creamos y editamos la ventana de pygame (escena) """
     """ 1.-definir el tamaño de la ventana"""
@@ -100,6 +102,7 @@ def gameLoop(GAME_OVER, QUIT_GAME, skin: str):
             score = pygame.font.SysFont("montserrat", 50)
             score = score.render("SCORE: " + str(player_score), True, BLACK, WHITE)
             score_rect = score.get_rect(center=(100, 20))
+            hitmarker_sfx.play()
 
         pressed_keys = pygame.key.get_pressed()
         player.update(pressed_keys)
@@ -110,13 +113,16 @@ def gameLoop(GAME_OVER, QUIT_GAME, skin: str):
                 if lifes == 1:
                     player.kill()
                     code = GAME_OVER
+                    oof_sfx.play()
                     running = False
+                    
                 else:
                     lifes -= 1
                     hp = pygame.font.SysFont("montserrat", 50)
                     hp = hp.render("VIDAS: " + str(lifes), True, BLACK, WHITE)
                     hp_rect = hp.get_rect(center=(SCREEN_WIDTH - 100, 20))
                     invulneravility_time = time()
+                    oof_sfx.play()
 
         pygame.display.flip()
 
@@ -132,6 +138,9 @@ def gameLoop(GAME_OVER, QUIT_GAME, skin: str):
                         paused = True
                 if event.key == K_SPACE:
                     player.shoot()
+                
+                if event.key == K_RETURN:
+                    player.super_shoot()
 
             # fue un click al cierre de la ventana? -> entonces terminamos
             elif event.type == QUIT:
