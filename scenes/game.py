@@ -17,49 +17,53 @@ import pygame
 from pygame.locals import K_ESCAPE, KEYDOWN, QUIT, K_SPACE, K_RETURN
 
 from elements.jorge import Player
+from elements.enemies import Bug, BugBoss, Bullet
+from elements.powerups import PickablePowerUp
 
-from elements.bug import Enemy
 from time import time
 
 
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 
+
+SCREEN_WIDTH = 1000
+SCREEN_HEIGHT = 700
+
+
+ADD_BUG = pygame.USEREVENT + 1
+ADD_BOSS_BUG = pygame.USEREVENT + 2
+ADD_BULLET = pygame.USEREVENT + 3
+ADD_POWERUP = pygame.USEREVENT + 4
+
+
 def gameLoop(GAME_OVER, QUIT_GAME, skin: str):
     code = QUIT_GAME
 
-    """iniciamos los modulos de pygame / skin tiene la ruta del asset a usar como skin de jorge"""
-
     pygame.init()
     pygame.mixer.init()
-    pygame.mixer.music.load('audio/gary.mp3')
+    pygame.mixer.music.load("audio/gary.mp3")
     pygame.mixer.music.play(-1)
-    hitmarker_sfx = pygame.mixer.Sound('audio/hitmarker.mp3')
-    oof_sfx = pygame.mixer.Sound('audio/oof.mp3')
-    
-    """ Creamos y editamos la ventana de pygame (escena) """
-    """ 1.-definir el tamaño de la ventana"""
-    SCREEN_WIDTH = 1000
-    SCREEN_HEIGHT = 700
+    hitmarker_sfx = pygame.mixer.Sound("audio/hitmarker.mp3")
+    oof_sfx = pygame.mixer.Sound("audio/oof.mp3")
 
-    """ 2.- crear el objeto pantalla"""
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
     background_image = pygame.image.load("assets/background.png").convert()
-    background_image = pygame.transform.scale(background_image, (SCREEN_WIDTH, SCREEN_HEIGHT))
-    """ Preparamos el gameloop """
-    """ 1.- creamos el reloj del juego"""
+    background_image = pygame.transform.scale(
+        background_image, (SCREEN_WIDTH, SCREEN_HEIGHT)
+    )
 
     clock = pygame.time.Clock()
-    """ 2.- generador de enemigos"""
 
-    ADDENEMY = pygame.USEREVENT + 1
-    pygame.time.set_timer(ADDENEMY, 600)
+    pygame.time.set_timer(ADD_BUG, 1500)
+    pygame.time.set_timer(ADD_BULLET, 5000)
+    pygame.time.set_timer(ADD_POWERUP, 10000)
+    pygame.time.set_timer(ADD_BOSS_BUG, 20000)
 
-    """ 3.- creamos la instancia de jugador"""
     player = Player(SCREEN_WIDTH, SCREEN_HEIGHT, skin)
 
-    """ 4.- contenedores de enemigos y jugador"""
     enemies = pygame.sprite.Group()
+    power_ups = pygame.sprite.Group()
     all_sprites = pygame.sprite.Group()
     all_sprites.add(player)
 
@@ -67,26 +71,21 @@ def gameLoop(GAME_OVER, QUIT_GAME, skin: str):
     # variable booleana para manejar el loop
     running = True
 
-    ''' Sistema de puntacion'''
+    """ Sistema de puntacion"""
     player_score = 0
     score = pygame.font.SysFont("montserrat", 50)
     score = score.render(f"SCORE: {str(player_score)}", True, BLACK, WHITE)
     score_rect = score.get_rect(center=(100, 20))
 
-    '''vidas'''
-    lifes = 3
-    hp = pygame.font.SysFont("montserrat", 50)
-    hp = hp.render("VIDAS: " + str(lifes), True, BLACK, WHITE)
-    hp_rect = hp.get_rect(center=(SCREEN_WIDTH - 100, 20))
-    invulneravility_time = 0
-
-    # loop principal del juego
+    """vidas"""
+    health_font = pygame.font.SysFont("montserrat", 50)
+    health = health_font.render(f"VIDAS: {str(player.lives)}", True, BLACK, WHITE)
+    health_rect = health.get_rect(center=(SCREEN_WIDTH - 100, 20))
 
     while running:
-
         screen.blit(background_image, [0, 0])
         screen.blit(score, score_rect)
-        screen.blit(hp, hp_rect)
+        screen.blit(health, health_rect)
 
         for entity in all_sprites:
             screen.blit(entity.surf, entity.rect)
@@ -95,9 +94,31 @@ def gameLoop(GAME_OVER, QUIT_GAME, skin: str):
         for projectile in player.projectiles:
             screen.blit(projectile.surf, projectile.rect)
 
+        for power_up in power_ups:
+            if pygame.sprite.collide_rect(player, power_up):
+                player.power_ups.append(power_up.player_power_up)
+                power_up.player_power_up.activate()
+                power_ups.remove(power_up)
+                all_sprites.remove(power_up)
+            else:
+                screen.blit(power_up.surf, power_up.rect)
+
         # POR HACER (2.5): Eliminar bug si colisiona con proyectil
         # pygame.sprite.groupcollide(enemies, player.projectiles, True, True)
-        if pygame.sprite.groupcollide(enemies, player.projectiles, True, True):
+        for enemy in enemies:
+
+            projectile_hit = pygame.sprite.spritecollideany(enemy, player.projectiles)
+
+            if not projectile_hit:
+                continue
+
+            projectile_hit.kill()
+            player.projectiles.remove(projectile_hit)
+            enemy.damage()
+
+            if enemy.alive():
+                continue
+
             player_score += 100
             score = pygame.font.SysFont("montserrat", 50)
             score = score.render("SCORE: " + str(player_score), True, BLACK, WHITE)
@@ -108,20 +129,22 @@ def gameLoop(GAME_OVER, QUIT_GAME, skin: str):
         player.update(pressed_keys)
         enemies.update()
 
+        for power_up in power_ups:
+            power_up.update()
+
         if pygame.sprite.spritecollideany(player, enemies):
-            if time() - invulneravility_time > 2:
-                if lifes == 1:
-                    player.kill()
+            if not player.is_invulnerable:
+                player.damage()
+
+                if not player.is_alive:
                     code = GAME_OVER
                     oof_sfx.play()
                     running = False
-                    
                 else:
-                    lifes -= 1
-                    hp = pygame.font.SysFont("montserrat", 50)
-                    hp = hp.render("VIDAS: " + str(lifes), True, BLACK, WHITE)
-                    hp_rect = hp.get_rect(center=(SCREEN_WIDTH - 100, 20))
-                    invulneravility_time = time()
+                    health = health_font.render(
+                        "VIDAS: " + str(player.lives), True, BLACK, WHITE
+                    )
+                    health_rect = health.get_rect(center=(SCREEN_WIDTH - 100, 20))
                     oof_sfx.play()
 
         pygame.display.flip()
@@ -138,7 +161,7 @@ def gameLoop(GAME_OVER, QUIT_GAME, skin: str):
                         paused = True
                 if event.key == K_SPACE:
                     player.shoot()
-                
+
                 if event.key == K_RETURN:
                     player.super_shoot()
 
@@ -146,11 +169,22 @@ def gameLoop(GAME_OVER, QUIT_GAME, skin: str):
             elif event.type == QUIT:
                 running = False
 
-            elif event.type == ADDENEMY:
-                new_enemy = Enemy(SCREEN_WIDTH, SCREEN_HEIGHT)
-                enemies.add(new_enemy)
-                all_sprites.add(new_enemy)
-
+            elif event.type == ADD_BUG:
+                new_bug = Bug(SCREEN_WIDTH, SCREEN_HEIGHT)
+                enemies.add(new_bug)
+                all_sprites.add(new_bug)
+            elif event.type == ADD_BOSS_BUG:
+                new_boss = BugBoss(player, SCREEN_WIDTH, SCREEN_HEIGHT)
+                enemies.add(new_boss)
+                all_sprites.add(new_boss)
+            elif event.type == ADD_BULLET:
+                new_bullet = Bullet(player, SCREEN_WIDTH, SCREEN_HEIGHT)
+                enemies.add(new_bullet)
+                all_sprites.add(new_bullet)
+            elif event.type == ADD_POWERUP:
+                new_powerup = PickablePowerUp(SCREEN_WIDTH, SCREEN_HEIGHT)
+                power_ups.add(new_powerup)
+                all_sprites.add(new_powerup)
 
         clock.tick(40)
 
