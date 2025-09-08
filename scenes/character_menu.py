@@ -4,7 +4,7 @@ Hola este es modulo menu principal.
 
 import pygame
 
-from pygame.locals import KEYDOWN, K_RETURN, QUIT, K_1, K_2, K_3
+from pygame.locals import KEYDOWN, K_RETURN, QUIT, K_1, K_2, K_3, K_4, K_5
 
 
 RED = (255, 0, 0)
@@ -12,23 +12,25 @@ WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 PINK = (255, 19, 255)
 
-jorge_wave = pygame.image.load("assets/JorgeVJ.png")
-jorge_wave = pygame.transform.scale(jorge_wave, (80, 80))
 
-jorge_sombrero = pygame.image.load("assets/Jorge_sombrero.png")
-jorge_sombrero = pygame.transform.scale(jorge_sombrero, (80, 80))
+CHARACTERS = (
+    ("Jorge Wave", "JorgeVJ.png"),
+    ("Jorge Default", "Jorge_default.png"),
+    ("Jorge Sombrero", "Jorge_sombrero.png"),
+    ("Lakitu", "lakitu.png"),
+    ("Kamek", "kamek.png"),
+    ("Conker", "conker.png"),
+)
 
-jorge_default = pygame.image.load("assets/Jorge_default.png")
-jorge_default = pygame.transform.scale(jorge_default, (80, 80))
 
-
-def gameLoop(CONTINUE_GAME, QUIT_GAME):
+def gameLoop():
     """iniciamos los modulos de pygame"""
 
     pygame.init()
     pygame.mixer.init()
-    pygame.mixer.music.load("audio/choose.mp3")
-    pygame.mixer.music.play(-1)
+
+    sound = pygame.mixer.Sound("audio/choose-your-character.mp3")
+    sound.play()
 
     """ Creamos y editamos la ventana de pygame (escena) """
     """ 1.-definir el tamaño de la ventana"""
@@ -62,16 +64,6 @@ def gameLoop(CONTINUE_GAME, QUIT_GAME):
     #########################
 
     font_text = pygame.font.SysFont("monserrat", 30)
-    text = font_text.render("[1] Jorge Default", True, WHITE)
-    text_rect = text.get_rect(center=(250, (SCREEN_HEIGHT / 2) - 150))
-
-    font_head = pygame.font.SysFont("monserrat", 30)
-    head = font_head.render("[2] Jorge-Wave", True, WHITE)
-    head_rect = head.get_rect(center=(500, (SCREEN_HEIGHT / 2) - 150))
-
-    font_text1 = pygame.font.SysFont("monserrat", 30)
-    text1 = font_text1.render("[3] Jorge-Sombrero ", True, WHITE)
-    text_rect1 = text1.get_rect(center=(750, (SCREEN_HEIGHT / 2) - 150))
 
     """ hora de hacer el gameloop """
     # variable booleana para manejar el loop
@@ -85,28 +77,37 @@ def gameLoop(CONTINUE_GAME, QUIT_GAME):
         screen.blit(background_image, [0, 0])
         screen.blit(title, title_rect)
         screen.blit(title2, title_rect2)
-        screen.blit(text, text_rect)
-        screen.blit(text1, text_rect1)
-        screen.blit(head, head_rect)
 
-        screen.blit(jorge_default, (220, (SCREEN_HEIGHT / 2) - 50))
-        screen.blit(jorge_wave, (470, (SCREEN_HEIGHT / 2) - 50))
-        screen.blit(jorge_sombrero, (720, (SCREEN_HEIGHT / 2) - 50))
+        for i, (name, file) in enumerate(CHARACTERS):
+            height = 100 + (i // 3) * 200
+
+            position_x = 300 + (i % 3) * 250
+            position_y = 100 + height
+
+            text = font_text.render(f"[{i + 1}] {name}", True, WHITE)
+            text_rect = text.get_rect(center=(position_x, position_y))
+
+            image = pygame.image.load(f"assets/{file}").convert_alpha()
+            image = pygame.transform.scale(image, (100, 100))
+            image_rect = image.get_rect(center=(position_x, position_y + 100))
+
+            screen.blit(text, text_rect)
+            screen.blit(image, image_rect)
 
         # iteramos sobre cada evento en la cola
         for event in pygame.event.get():
             # se presiono una tecla?
             if event.type == KEYDOWN:
-                # era la tecla de escape? -> entonces terminamos
-                if event.key == K_1:
+                if event.key == K_RETURN:
                     pygame.mixer.music.stop()
-                    return "Jorge_default.png"
-                if event.key == K_2:
-                    pygame.mixer.music.stop()
-                    return "JorgeVJ.png"
+                    return ""
 
-                if event.key == K_3:
-                    pygame.mixer.music.stop()
-                    return "Jorge_sombrero.png"
+                for i in range(len(CHARACTERS)):
+                    if event.key == K_1 + i:
+                        pygame.mixer.music.stop()
+                        return CHARACTERS[i][1]
+
+            if event.type == QUIT:
+                return ""
 
         clock.tick(40)

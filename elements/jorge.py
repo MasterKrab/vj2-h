@@ -14,10 +14,13 @@ if __name__ == "__main__":  # Solo para que no ejecutes este archivo
 
 import pygame
 from pygame.locals import K_w, K_s, K_a, K_d, SRCALPHA
-from time import time
+
+from utils.timer import timer
 
 from elements.projectile import Projectile
-from elements.powerups import CoolDownReduction, Shield, SpeedBoost
+from elements.powerups import CoolDownReduction, LifeUp, Shield, SpeedBoost
+
+import math
 
 
 COOLDOWN = 1
@@ -54,9 +57,9 @@ class Player(pygame.sprite.Sprite):
         self.position = (screen_width // 4, screen_height // 2)
         self.rect.center = self.position
 
-        self.last_shoot = time()
-        self.last_super_shoot = time()
-        self.power_ups = []
+        self.last_shoot = timer.current
+        self.last_super_shoot = timer.current
+        self.power_ups = set()
         self.lives = 3
         self.last_damage_time = None
         self.normal_speed = 7
@@ -73,7 +76,10 @@ class Player(pygame.sprite.Sprite):
 
     @property
     def is_invulnerable(self):
-        return self.last_damage_time is not None and time() - self.last_damage_time < 3
+        return (
+            self.last_damage_time is not None
+            and timer.current - self.last_damage_time < 3
+        )
 
     @property
     def is_alive(self):
@@ -81,7 +87,19 @@ class Player(pygame.sprite.Sprite):
 
     @property
     def active_power_ups(self):
-        return [power_up for power_up in self.power_ups if power_up.is_active]
+
+        for power_up in list(self.power_ups):
+            if not power_up.is_active:
+                self.power_ups.remove(power_up)
+
+        return self.power_ups
+
+    def add_power_up(self, power_up):
+        if isinstance(power_up, LifeUp):
+            self.lives += 1
+            return
+
+        self.power_ups.add(power_up)
 
     @property
     def shoot_cooldown(self):
@@ -103,7 +121,7 @@ class Player(pygame.sprite.Sprite):
         if self.is_invulnerable:
             return
 
-        self.last_damage_time = time()
+        self.last_damage_time = timer.current
 
         for power_up in self.active_power_ups:
             if isinstance(power_up, Shield):
@@ -145,14 +163,26 @@ class Player(pygame.sprite.Sprite):
 
         self.projectiles.update()
 
+    def shoot_direction(self):
+        cursor = pygame.mouse.get_pos()
+
+        delta_x = cursor[0] - self.rect.centerx
+        delta_y = cursor[1] - self.rect.centery
+        magnitude = (delta_x**2 + delta_y**2) ** 0.5
+
+        direction = (
+            (delta_x / magnitude, delta_y / magnitude) if magnitude != 0 else (0, 0)
+        )
+
+        return direction
+
     def shoot(self):
-        if self.last_shoot < 0 or time() - self.last_shoot < self.shoot_cooldown:
+        if self.last_shoot < 0 or timer.current - self.last_shoot < self.shoot_cooldown:
             return
 
-        self.last_shoot = time()
+        self.last_shoot = timer.current
 
-        # POR HACER (2.3): Crear y calcular dirección proyectil
-        direction = (1, 0)
+        direction = self.shoot_direction()
 
         projectile = Projectile(
             self.rect.center, direction, self.screen_width, self.screen_height
@@ -163,41 +193,31 @@ class Player(pygame.sprite.Sprite):
     def super_shoot(self):
         if (
             self.last_super_shoot < 0
-            or time() - self.last_super_shoot < self.super_shoot_cooldown
+            or timer.current - self.last_super_shoot < self.super_shoot_cooldown
         ):
             return
 
-        projectile_1 = Projectile(
-            self.rect.center, (1, 1), self.screen_width, self.screen_height, radius=120
-        )
-        projectile_2 = Projectile(
-            self.rect.center,
-            (0.5, 0.5),
-            self.screen_width,
-            self.screen_height,
-            radius=120,
-        )
-        projectile_3 = Projectile(
-            self.rect.center, (1, 0), self.screen_width, self.screen_height, radius=120
-        )
-        projectile_4 = Projectile(
-            self.rect.center,
-            (0.5, -0.5),
-            self.screen_width,
-            self.screen_height,
-            radius=120,
-        )
-        projectile_5 = Projectile(
-            self.rect.center, (1, -1), self.screen_width, self.screen_height, radius=120
-        )
+        direction = self.shoot_direction()
+
+        directions = []
+        rotations = [5, -5, 20, -20, 30, -30]
+
+        for angle in rotations:
+            angle = math.atan2(direction[1], direction[0]) + math.radians(angle)
+            directions.append((math.cos(angle), math.sin(angle)))
+
         projectiles = [
-            projectile_1,
-            projectile_2,
-            projectile_3,
-            projectile_4,
-            projectile_5,
+            Projectile(
+                self.rect.center,
+                direction,
+                self.screen_width,
+                self.screen_height,
+                radius=120,
+            )
+            for direction in directions
         ]
-        self.projectiles.add(projectiles)
+
+        self.projectiles.add(*projectiles)
         self.projectile_sfx.play()
-        self.last_super_shoot = time()
+        self.last_super_shoot = timer.current
         self.super_projectile_sfx.play()

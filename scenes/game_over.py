@@ -8,30 +8,22 @@ import pygame
 from pygame.locals import KEYDOWN, K_SPACE, QUIT, K_ESCAPE
 
 
+from constants.state import CONTINUE_GAME, QUIT_GAME
+
+
 RED = (255, 0, 0)
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 
 
-def gameLoop(CONTINUE_GAME, QUIT_GAME):
-    """iniciamos los modulos de pygame"""
-
-    pygame.init()
-
-    """ Creamos y editamos la ventana de pygame (escena) """
-    """ 1.-definir el tamaño de la ventana"""
+def gameLoop():
     SCREEN_WIDTH = 1000
     SCREEN_HEIGHT = 700
 
-    """ 2.- crear el objeto pantalla"""
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-
-    """ Preparamos el gameloop """
-    """ 1.- creamos el reloj del juego"""
 
     clock = pygame.time.Clock()
 
-    """ Texto """
     font_title = pygame.font.SysFont("times new roman", 50)
     title = font_title.render("YOU DIED", True, RED, BLACK)
     title_rect = title.get_rect(center=(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2))
@@ -45,11 +37,10 @@ def gameLoop(CONTINUE_GAME, QUIT_GAME):
     )
     text_rect = text.get_rect(center=(SCREEN_WIDTH / 2, (SCREEN_HEIGHT / 2) + 100))
 
-    """ hora de hacer el gameloop """
-    # variable booleana para manejar el loop
-    running = True
+    sound = pygame.mixer.Sound("audio/game-over.mp3")
+    sound.play()
 
-    # loop principal del juego
+    running = True
 
     while running:
         pygame.display.flip()

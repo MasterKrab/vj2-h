@@ -18,7 +18,6 @@ crosshair = pygame.transform.scale(crosshair, (CROSSHAIR_SIZE, CROSSHAIR_SIZE))
 
 
 class Cursor(pygame.sprite.Sprite):
-
     def __init__(self):
         super(Cursor, self).__init__()
 
@@ -26,5 +25,5 @@ class Cursor(pygame.sprite.Sprite):
         self.surf.set_colorkey((0, 0, 0), RLEACCEL)
         self.rect = self.surf.get_rect()
 
-    def update(self, position_x, position_y):
-        self.rect = self.surf.get_rect(center=(position_x, position_y))
+    def update(self, position: tuple[int, int]):
+        self.rect = self.surf.get_rect(center=position)

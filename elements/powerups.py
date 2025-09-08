@@ -1,13 +1,14 @@
 import pygame
 from abc import ABC
-from time import time
 from random import randint
 from constants.colors import CYAN
+from utils.timer import timer
 
 
 class PowerUp(ABC):
     def __init__(self):
         self.duration = randint(5, 15)
+        self.size = 65
 
         self.time = -1
 
@@ -16,10 +17,10 @@ class PowerUp(ABC):
         if self.time == -1:
             return False
 
-        return time() - self.time < self.duration
+        return timer.current - self.time < self.duration
 
     def activate(self):
-        self.time = time()
+        self.time = timer.current
 
 
 class CoolDownReduction(PowerUp):
@@ -50,8 +51,14 @@ class Shield(PowerUp):
         return self.surface
 
 
+class LifeUp(PowerUp):
+    def __init__(self):
+        super().__init__()
+        self.size = 45
+
+
 def get_random_power_up():
-    power_ups = [CoolDownReduction, SpeedBoost, Shield]
+    power_ups = [CoolDownReduction, SpeedBoost, Shield, LifeUp]
     return power_ups[randint(0, len(power_ups) - 1)]()
 
 
@@ -67,7 +74,10 @@ class PickablePowerUp(pygame.sprite.Sprite):
         self.icon = pygame.image.load(
             f"assets/power_ups/{self.player_power_up.__class__.__name__}.png"
         )
-        self.surf = pygame.transform.scale(self.icon, (40, 40))
+
+        self.surf = pygame.transform.scale(
+            self.icon, (self.player_power_up.size, self.player_power_up.size)
+        )
         self.rect = self.surf.get_rect()
 
         self.speed = 10

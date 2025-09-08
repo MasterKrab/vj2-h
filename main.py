@@ -1,33 +1,52 @@
-"""
-Hola este es modulo principal,
-el codigo que al ejecutar pondra en marcha nuestro juego
-"""
+import pygame
+
 import scenes.main_menu as MainMenu
 import scenes.game as GameScene
 import scenes.game_over as GameOver
-import scenes.character_menu as character_menu
+import scenes.character_menu as CharacterMenu
+import scenes.achievements as Achievements
 
-GAME_OVER = 0
-QUIT_GAME = 1
-CONTINUE_GAME = 2
+from constants.state import ACHIEVEMENTS, MAIN_MENU, QUIT_GAME
 
-"""Inicio la escena de mi juego"""
+from utils.timer import timer
+
+import time
+import random
+
+random.seed(time.time() * time.time_ns())
+
+
+achievements = set()
+
 while True:
-    
-    code = MainMenu.gameLoop(CONTINUE_GAME, QUIT_GAME) 
-    
+    pygame.init()
+    timer.start_timer()
+
+    while True:
+        code = MainMenu.gameLoop()
+
+        if code != ACHIEVEMENTS:
+            break
+
+        code = Achievements.gameLoop(achievements)
+
+        if code == MAIN_MENU:
+            continue
+
     if code == QUIT_GAME:
         break
 
-    skin = character_menu.gameLoop(CONTINUE_GAME, QUIT_GAME)
+    skin = CharacterMenu.gameLoop()
 
-    code = GameScene.gameLoop(GAME_OVER, QUIT_GAME, skin)
+    if not skin:
+        break
+
+    code = GameScene.gameLoop(skin, achievements)
 
     if code == QUIT_GAME:
         break
 
-    code = GameOver.gameLoop(CONTINUE_GAME, QUIT_GAME)
+    code = GameOver.gameLoop()
 
     if code == QUIT_GAME:
         break
-
